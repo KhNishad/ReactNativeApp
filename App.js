@@ -1,102 +1,90 @@
 
-import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
-import React, { useState, useRef ,useEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
-  StatusBar,
-  ActivityIndicator,
-  View,
   TouchableOpacity,
   Text,
   BackHandler,
-  Alert,
-  Image
+  Image,
+  Button,
+  StatusBar
 } from 'react-native';
+import React, { useState, useRef ,useEffect} from 'react';
 import {WebView} from 'react-native-webview';
 
 
 const App = () => {
-
   const webviewRef = useRef(null)
+  const [webView, setwebView] = useState(true)
 
-  const backButtonHandler = () => {
-   
-    if (webviewRef.current){
+  const handlePress = () =>{
+    setwebView(false)
+ }
+
+
+ const backAction = () => {
+   if (webviewRef.current){
         webviewRef.current.goBack()
-    }
-    
-   }
-      const backAction = () => {
-        Alert.alert("Exit App?", "Are you sure? you want to exit the app?", [
-          {
-            text: "Cancel",
-            onPress: () => null,
-            style: "cancel"
-          },
-          { text: "YES", onPress: () => BackHandler.exitApp() }
-        ]);
-        return true;
-      };
-    
-      useEffect(() => {
-        BackHandler.addEventListener("hardwareBackPress", backAction);
-    
-        return () =>
-          BackHandler.removeEventListener("hardwareBackPress", backAction);
-      }, []);
-      
+      }
+   return true;
+ };
 
+ useEffect(() => {
+   BackHandler.addEventListener("hardwareBackPress", backAction);
+
+   return () =>
+     BackHandler.removeEventListener("hardwareBackPress", backAction);
+ }, []);
  
   return (
-    <>
-      <StatusBar barStyle='light-content' />
-      <SafeAreaView style={styles.flexContainer} >
+      <>
+          <StatusBar />
+          {webView?
+            <SafeAreaView style={styles.flexContainer}>
+              <TouchableOpacity>
+                <Image
+              
+                  source={require("./assets/playstore.png")}
+                  style={{ width: 200, height: 200}}
+                />
+                <Text style={styles.title}>Welcome to ebhubon!</Text>
+                <Button
+                  onPress={handlePress}
+                  title="Go to seller Panel"
+                  color="#D70022"
+                  />
+              </TouchableOpacity>
+            
+          </SafeAreaView>
+          :
+      
+              <WebView
+                source={{ uri: 'https://seller.ebhubon.com/user/login' }}
+                startInLoadingState={true}
+                ref={webviewRef}
+            
+            />
+        
+        
+          }
 
-         <View  style = {{justifyContent: 'center',alignItems:'center', backgroundColor: '#F0F2F5' }}>
-         <Image
-        
-          source={require("./assets/seller-app-icon.png")}
-          style={{ width: 80, height: 100}}
-        />
-         </View>
-       
-          <WebView
-            source={{ uri: 'https://seller.ebhubon.com' }}
-            startInLoadingState={true}
-            renderLoading={() => (
-              <ActivityIndicator
-                color='black'
-                size='large'
-                style={styles.flexContainer}
-              />
-            )}
-            ref={webviewRef}
-          
-          />
-          
-          <View style={styles.tabBarContainer}>
-            <TouchableOpacity onPress={backButtonHandler}>
-              <Text style={styles.button}>Go Back</Text>
-            </TouchableOpacity>
-          </View>
-        
-        
-      </SafeAreaView>
-    </>
+      </>
+    
   )
 }
 
 const styles = StyleSheet.create({
   flexContainer: {
-    flex: 1
+    flex: 1,
+    justifyContent:'center',
+    alignItems:'center'
   },
-  tabBarContainer: {
-    padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#b43757'
-  },
+
+  title:{
+    fontSize:20,
+    fontWeight: 'bold',
+    marginBottom:10
+},
   button: {
     color: 'white',
     fontSize: 15 
